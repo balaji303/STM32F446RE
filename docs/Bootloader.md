@@ -18,5 +18,34 @@
       1. Depending on the Status of certain pins (boot 0 or boot 1) they enter the specific regions of the flash
       1. This is controlled by the debuggger
 
+## Boot Configuration
+
+| BOOT1           | BOOT2 | Boot Mode   | Aliasing | Notes | 
+|----------------|---------------|---------------|----------------|-----------|
+| x           | 1 | Main Flash Memory   | Main Flash is selected as boot area | Notes |
 ## Internal Flash
 - The Size of Internal Flash is 512KB in STM32F446RE
+- Begins at 0x0800_0000 and Ends at 0x0807_FFFF
+- There are 7 sector of different size and starting address, the code by default stored from sector 0
+- Non-volatile Memory
+
+## Internal Static RAM
+- There are 2 SRAM
+- SRAM 1  Begins at 0x2000_0000 and Ends at 0x2001_BFFF whose size is 112KB
+- SRAM 2  Begins at 0x2000_0000 and Ends at 0x2000_0000 whose size is 16KB
+- Used to store Global and static variables
+- Used to store Stack and Heap
+- Volatile Memory
+
+## System Memory ROM
+- Size is 30KB
+- Begins at 0x1FFF_0000 and Ends at 0x1FFF_77FF
+- Read Only
+- By default this memory will not be used but we can configure to execute or boot the MCU from this memory 
+
+## Facts
+- Memory Aliasing
+  - [ ] A Technique called "Memory Aliasing" is used to map the contents of Data in the User Flash (0x0800_0000) to the very 
+  begining of the flash (0x0000_0000), we can also check using the memory window both the content of 0x0800_0000 and 0x0000_0000
+  are completely same.
+  - Using this method, on reset the MSP(Main Stack Pointer) goes to reset handler and continuse to jump to 0x0800_0000 on next run

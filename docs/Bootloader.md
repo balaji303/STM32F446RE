@@ -22,7 +22,10 @@
 
 | BOOT1           | BOOT2 | Boot Mode   | Aliasing | Notes | 
 |----------------|---------------|---------------|----------------|-----------|
-| x           | 1 | Main Flash Memory   | Main Flash is selected as boot area | Notes |
+| x           | 0 | Main Flash Memory   | Main Flash is selected as boot area | This means the content of 0x0800 is aliased with 0x0000 |
+| 0           | 1 | System Memory   | System Memory is selected as boot area | This means the content of 0x1FFF is aliased with 0x0000 |
+| 1           | 1 | Embedded SRAM   | Embedded SRAM is selected as boot area | This means the content of 0x2000 is aliased with 0x0000 |
+
 ## Internal Flash
 - The Size of Internal Flash is 512KB in STM32F446RE
 - Begins at 0x0800_0000 and Ends at 0x0807_FFFF

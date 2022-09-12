@@ -1,0 +1,20 @@
+The 'RTX_Blinky' project is a simple CMSIS RTOS Kernel based example for
+ST 'STM32F446RE' microcontroller using ST 'Nucleo-F446RE' Evaluation Board.
+Compliant to Cortex Microcontroller Software Interface Standard (CMSIS).
+
+Example functionality:
+ - Clock Settings:
+   - XTAL    = HSI     =  16.00 MHz
+   - SYSCLK  =           100.00 MHz
+
+ - one LED blinks with a fixed speed, determined by SysTick Timer working in interrupt mode.
+ - blinking is paused while holding down the USER button.
+
+
+The Blinky example is available in different targets:
+
+  STM32F446 Flash:    configured for on-chip Flash
+                      (used for production or target debugging)
+
+  STM32F446 RAM:      configured for on-chip RAM
+                      (used for target debugging)

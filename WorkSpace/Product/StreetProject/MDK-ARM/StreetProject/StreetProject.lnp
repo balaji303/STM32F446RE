@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp
+"streetproject\startup_stm32f446xx.o"
+"streetproject\main.o"
+"streetproject\stm32f4xx_it.o"
+"streetproject\stm32f4xx_hal_msp.o"
+"streetproject\stm32f4xx_hal_adc.o"
+"streetproject\stm32f4xx_hal_adc_ex.o"
+"streetproject\stm32f4xx_hal_rcc.o"
+"streetproject\stm32f4xx_hal_rcc_ex.o"
+"streetproject\stm32f4xx_hal_flash.o"
+"streetproject\stm32f4xx_hal_flash_ex.o"
+"streetproject\stm32f4xx_hal_flash_ramfunc.o"
+"streetproject\stm32f4xx_hal_gpio.o"
+"streetproject\stm32f4xx_hal_dma_ex.o"
+"streetproject\stm32f4xx_hal_dma.o"
+"streetproject\stm32f4xx_hal_pwr.o"
+"streetproject\stm32f4xx_hal_pwr_ex.o"
+"streetproject\stm32f4xx_hal_cortex.o"
+"streetproject\stm32f4xx_hal.o"
+"streetproject\stm32f4xx_hal_exti.o"
+"streetproject\stm32f4xx_hal_tim.o"
+"streetproject\stm32f4xx_hal_tim_ex.o"
+"streetproject\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "StreetProject\StreetProject.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "StreetProject.map" -o StreetProject\StreetProject.axf

@@ -20,7 +20,7 @@
 
 ## Boot Configuration
 
-| BOOT1           | BOOT2 | Boot Mode   | Aliasing | Notes | 
+| BOOT1           | BOOT0 | Boot Mode   | Aliasing | Notes | 
 |----------------|---------------|---------------|----------------|-----------|
 | x           | 0 | Main Flash Memory   | Main Flash is selected as boot area | This means the content of 0x0800 is aliased with 0x0000 |
 | 0           | 1 | System Memory   | System Memory is selected as boot area | This means the content of 0x1FFF is aliased with 0x0000 |

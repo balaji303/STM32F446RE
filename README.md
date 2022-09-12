@@ -15,3 +15,6 @@ This is a repo for the Board STM32F446RE
 ## Notes
 
 - [Bootloader Notes](https://github.com/balaji303/STM32F446RE/blob/main/docs/Bootloader.md)
+
+## Images
+![PinOut](https://github.com/balaji303/STM32F446RE/blob/main/docs/NucleoPinOut.jpg)

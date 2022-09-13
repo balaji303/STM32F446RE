@@ -52,3 +52,37 @@
   begining of the flash (0x0000_0000), we can also check using the memory window both the content of 0x0800_0000 and 0x0000_0000
   are completely same.
   - Using this method, on reset the MSP(Main Stack Pointer) goes to reset handler and continuse to jump to 0x0800_0000 on next run
+
+## Boot Control
+- Connect the USB to USART cable to the board in the following order
+  | USB-USART Cable           | Board | 
+  |----------------|---------------|
+  | White (RXD)           | PC10 (USART3_TX) |
+  | Green (TXD)           | PC11 (USART3_RX) |
+  | Red           | NO CONNECT |
+  | Black           | GND|
+- Connect the BOOT0 pin to GND and Power Up the Board.
+- Use the tool https://www.st.com/en/development-tools/flasher-stm32.html
+
+## Setup Overview
+- **USART2**->(Virtual Port for Bootloader command)->**BOOTLOADER**->(Debug Prints over USB-USART cable->**USART3**
+- We will be using the first 2 sector (0 and 1 of size 16KB) of Internal Flash for our Bootloader and 
+rom Sector 2 we will use for our application
+![Flash Module Organisation](https://github.com/balaji303/STM32F446RE/blob/main/docs/Table4_RM.jpg)
+
+## Bootloader Commands
+
+| Host Sends | Command Code | Bootloader Replies   | Size of Reply | Notes | 
+|----------------|---------------|---------------|----------------|-----------|
+| BL_GET_VER           | 0x51 | Bootloader version number  | 1 Byte | This command is used to read the bootloader version from the MCU |
+| BL_GET_HELP           | 0x52 | All supported Command codes   | 10 bytes | This command is used to know what are the commands supported by the bootloader |
+| BL_GET_CID           | 0x53 | Chip identification number | 2 Bytes | This command is used to read the MCU chip identification number |
+| BL_GET_RDP_STATUS    | 0x54 | Returns the FLASH Read Protection level | 1 Bytes | This command is used to read the Flash read protection level |
+| BL_GO_TO_ADDR    | 0x55 | Success or Error Code | 1 Bytes | This command is used to jump bootloader to specified address |
+| BL_FLASH_ERASE    | 0x56 | Success or Error Code | 1 Bytes | This command is used to mass erase or sector erase of the user flash |
+| BL_MEM_WRITE    | 0x57 | Success or Error Code | 1 Bytes | This command is used to write data in to different memories of the MCU |
+| BL_EN_R_W_PROTECT  | 0x58 | Success or Error Code | 1 Bytes | This command is used to enable read/write protect on different sectors of the user flash |
+| BL_MEM_READ | 0x59 | Memory contents of length asked by the host | May vary | This command is used to read data from different memories of the microcontroller.TODO | 
+| BL_READ_SECTOR_STATUS | 0x5A | All sector status | 2bytes | This command is used to read all the sector protection status |
+| BL_OTP_READ | 0x5B | OTP contents | May Vary | This command is used to read the OTP contents. TODO |
+| BL_DIS_R_W_PROTECT | 0x5C | Success or Error Code | 1byte | This command is used to disable read/write protection on different sectors of the user flash . This command takes the protection status to default state |

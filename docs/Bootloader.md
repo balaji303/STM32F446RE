@@ -86,3 +86,12 @@ rom Sector 2 we will use for our application
 | BL_READ_SECTOR_STATUS | 0x5A | All sector status | 2bytes | This command is used to read all the sector protection status |
 | BL_OTP_READ | 0x5B | OTP contents | May Vary | This command is used to read the OTP contents. TODO |
 | BL_DIS_R_W_PROTECT | 0x5C | Success or Error Code | 1byte | This command is used to disable read/write protection on different sectors of the user flash . This command takes the protection status to default state |
+
+
+'''Mermaid
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+'''

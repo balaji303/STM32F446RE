@@ -49,6 +49,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 BootLoader_v1.list \
 
+OBJCOPY_HEX += \
+BootLoader_v1.hex \
+
 OBJCOPY_BIN += \
 BootLoader_v1.bin \
 
@@ -75,6 +78,11 @@ BootLoader_v1.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+BootLoader_v1.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "BootLoader_v1.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 BootLoader_v1.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "BootLoader_v1.bin"
 	@echo 'Finished building: $@'
@@ -82,10 +90,10 @@ BootLoader_v1.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 
 # Other Targets
 clean:
-	-$(RM) BootLoader_v1.bin BootLoader_v1.elf BootLoader_v1.list default.size.stdout
+	-$(RM) BootLoader_v1.bin BootLoader_v1.elf BootLoader_v1.hex BootLoader_v1.list default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

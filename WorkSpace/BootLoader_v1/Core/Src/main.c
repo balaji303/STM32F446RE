@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdarg.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +45,7 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-
+#define VRL_COM_UART 	&huart2
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,12 +55,12 @@ static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void printmsg( char *format,... );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+//UART_HandleTypeDef *UART
 /* USER CODE END 0 */
 
 /**
@@ -95,17 +95,23 @@ int main(void)
   MX_CRC_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_UART_Transmit(&huart2,(uint8_t *)"Hello World!\r\n",15,HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint32_t currentTick = HAL_GetTick();
+	  printmsg( "curentTick = %d\r\n",currentTick );
+	  while( HAL_GetTick() <= ( currentTick + 100 ) )
+	  {
+		// Do Nothing
+	  }
     /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
+    /* USER CODE BEGIN 3 */
+
   /* USER CODE END 3 */
 }
 
@@ -281,6 +287,22 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+/**
+  * @brief  This function is used to print string in Console over UART.
+  * @retval None
+  */
+void printmsg( char *format,... )
+{
+#if ( BOOT_DEBUG_MSG == 1 )
+	char data[100];
+
+	va_list args;
+	va_start(args, format);
+	vsprintf(data, format, args);
+	HAL_UART_Transmit( VRL_COM_UART, (uint8_t *)data, strlen(data), HAL_MAX_DELAY );
+	va_end(args);
+#endif
+}
 /* USER CODE END 4 */
 
 /**

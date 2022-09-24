@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp
+"bootloader_v1\startup_stm32f446xx.o"
+"bootloader_v1\main.o"
+"bootloader_v1\stm32f4xx_it.o"
+"bootloader_v1\stm32f4xx_hal_msp.o"
+"bootloader_v1\stm32f4xx_hal_crc.o"
+"bootloader_v1\stm32f4xx_hal_rcc.o"
+"bootloader_v1\stm32f4xx_hal_rcc_ex.o"
+"bootloader_v1\stm32f4xx_hal_flash.o"
+"bootloader_v1\stm32f4xx_hal_flash_ex.o"
+"bootloader_v1\stm32f4xx_hal_flash_ramfunc.o"
+"bootloader_v1\stm32f4xx_hal_gpio.o"
+"bootloader_v1\stm32f4xx_hal_dma_ex.o"
+"bootloader_v1\stm32f4xx_hal_dma.o"
+"bootloader_v1\stm32f4xx_hal_pwr.o"
+"bootloader_v1\stm32f4xx_hal_pwr_ex.o"
+"bootloader_v1\stm32f4xx_hal_cortex.o"
+"bootloader_v1\stm32f4xx_hal.o"
+"bootloader_v1\stm32f4xx_hal_exti.o"
+"bootloader_v1\stm32f4xx_hal_tim.o"
+"bootloader_v1\stm32f4xx_hal_tim_ex.o"
+"bootloader_v1\stm32f4xx_hal_uart.o"
+"bootloader_v1\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "Bootloader_v1\Bootloader_v1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Bootloader_v1.map" -o Bootloader_v1\Bootloader_v1.axf

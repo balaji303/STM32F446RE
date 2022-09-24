@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdarg.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,7 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-#define VRL_COM_UART 	&huart2
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,7 +56,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void printmsg( char *format,... );
+void print_msg( char *format,... );
+void jump_to_app(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -70,7 +72,7 @@ void printmsg( char *format,... );
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	bool userButton;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,21 +97,33 @@ int main(void)
   MX_CRC_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&huart2,(uint8_t *)"Hello World!\r\n",15,HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart2,(uint8_t *)"Hello from Bootloader!\r\n",15,HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /* Get the User Button Status */
+	  userButton = HAL_GPIO_ReadPin( USER_BUTTON_PORT, USER_BUTTON_PIN );
+	  if ( userButton == BUTTON_PRESSED )
+	  {
+		  print_msg( "[DBG_INFO]: Button Pressed\r\n" );
+		  jump_to_app();
+	  }
+	  else
+	  {
+		  print_msg( "[DBG_INFO]: Button Not Pressed\r\n" );
+	  }
 	  uint32_t currentTick = HAL_GetTick();
-	  printmsg( "curentTick = %d\r\n",currentTick );
-	  while( HAL_GetTick() <= ( currentTick + 100 ) )
+	  print_msg( "[DBG_INFO]: curentTick = %d\r\n",currentTick );
+	  while( HAL_GetTick() <= ( currentTick + 1000 ) )
 	  {
 		// Do Nothing
 	  }
-    /* USER CODE END WHILE */
   }
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
@@ -283,6 +297,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -291,11 +309,10 @@ static void MX_GPIO_Init(void)
   * @brief  This function is used to print string in Console over UART.
   * @retval None
   */
-void printmsg( char *format,... )
+void print_msg( char *format,... )
 {
 #if ( BOOT_DEBUG_MSG == 1 )
 	char data[100];
-
 	va_list args;
 	va_start(args, format);
 	vsprintf(data, format, args);
@@ -303,6 +320,44 @@ void printmsg( char *format,... )
 	va_end(args);
 #endif
 }
+
+/**
+  * @brief  This function is used to jump the code to app(0X0800_8000 or Sector 2)
+  * 		or FLASH_SECTOR2_BASE_ADDRESS
+  * @retval None
+  */
+void jump_to_app(void)
+{
+	/*	There are two things we need to take care before switching to App section
+	 * 	1. Stack Pointer
+	 * 		The very first address in app(0X0800_8000) holds the value of Main Stack Pointer
+	 * 		(MSP)
+	 *	2. Reset Handler
+	 *		The next address in app(0x0800_8000+4) holds the value of the Reset Handler
+	 * 	*/
+
+	/* A function to hold the address of the reset handler */
+	void (*app_reset_handler_addr)(void);
+	print_msg("[DBG_MSG]: Started jump to application\r\n");
+
+	/* 1.Get the MSP by reading the very first address in app */
+	uint32_t mspValue = *(volatile uint32_t *)FLASH_SECTOR2_BASE_ADDRESS;
+	print_msg("[DBG_INFO]: mspValue = %#x\r\n",mspValue);
+
+	/* Sets the New MSP_value */
+	__set_MSP(mspValue);
+
+	/* 2.Get the resetHandlerAddr address from next address and set the new value */
+	uint32_t resetHandlerAddr = *( volatile uint32_t *) (FLASH_SECTOR2_BASE_ADDRESS + 4);
+	app_reset_handler_addr = (void *)resetHandlerAddr;
+
+	print_msg("[DBG_INFO]: app_reset_handler_addr = %#x\r\n",app_reset_handler_addr);
+
+	/* 3. Jump to the reset handler of the address */
+	app_reset_handler_addr();
+
+}
+
 /* USER CODE END 4 */
 
 /**

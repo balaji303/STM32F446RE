@@ -87,11 +87,24 @@ rom Sector 2 we will use for our application
 | BL_OTP_READ | 0x5B | OTP contents | May Vary | This command is used to read the OTP contents. TODO |
 | BL_DIS_R_W_PROTECT | 0x5C | Success or Error Code | 1byte | This command is used to disable read/write protection on different sectors of the user flash . This command takes the protection status to default state |
 
+## Custom Bootloader Code Flow
 
-'''Mermaid
-graph TD;
-  A-->B;
-  A-->C;
-  B-->D;
-  C-->D;
-'''
+1. On Reset of the MCU it goes to the reset handler
+1. We do the Inits of necessary peripharals like
+  1. GPIOs
+  1. UART
+  1. CRC
+  1. Clocl
+1. We need to check the status of USER Button, if pressed
+  1. YES,Then read the data from the UART (Continue in Bootloader mode)
+  1. No, Then jump to the application  ( Handover the control to application mode)
+
+
+## VTOR
+
+- The VTOR stands for Vector Table reallocation Register
+- This is used to reallocate the vector table for the application code
+- By default this VTOR is 0, which indicates there is only one vector table
+- But now, there will be 2
+  - One for Bootloader at 0x000000 which means VTOR = 0
+  - Another for application at 0x8008000 whihc means VTOR needs to be 0x8008000

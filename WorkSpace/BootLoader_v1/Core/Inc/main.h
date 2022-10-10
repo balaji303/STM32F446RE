@@ -27,11 +27,15 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+
 #include "stm32f4xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include "BootloaderFunctions.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,7 +45,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+UART_HandleTypeDef huart2;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -50,13 +54,15 @@ extern "C" {
 #define USER_BUTTON_PORT	GPIOC
 #define BUTTON_PRESSED		RESET
 
+#define TASK_COMPLETED			0
+#define TASK_PENDING			1
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+bool verify_crc(uint8_t *pData, uint32_t len, uint32_t crcFromHost);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -79,6 +85,9 @@ void Error_Handler(void);
 #define VRL_COM_UART 				&huart2
 #define BOOT_DEBUG_MSG				1
 #define FLASH_SECTOR2_BASE_ADDRESS 	0x08008000
+#define BOOT_RX_SIZE				200
+
+uint8_t bootRxBuf[BOOT_RX_SIZE]; //Buffer to receieve data from the user
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

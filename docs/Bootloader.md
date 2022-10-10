@@ -97,7 +97,7 @@ rom Sector 2 we will use for our application
   1. Clocl
 1. We need to check the status of USER Button, if pressed
   1. YES,Then read the data from the UART (Continue in Bootloader mode)
-  1. No, Then jump to the application  ( Handover the control to application mode)
+  1. No, Then jump to the application  ( Handover the control to application mode make sure vector table is allocated)
 
 
 ## VTOR
@@ -108,3 +108,9 @@ rom Sector 2 we will use for our application
 - But now, there will be 2
   - One for Bootloader at 0x000000 which means VTOR = 0
   - Another for application at 0x8008000 whihc means VTOR needs to be 0x8008000
+
+## HOST - BOOTLOADER COMMUNICATION
+
+1. HOST -> Command                         -> MCU
+1. HOST <- ACK/NACK + Length to follow     <- MCU
+1. HOST <- Reply of Length to follow bytes <- MCU

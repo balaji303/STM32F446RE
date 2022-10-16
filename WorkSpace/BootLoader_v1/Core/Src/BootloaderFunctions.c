@@ -44,10 +44,49 @@ const cmdTable_t bootCmdTable[] =
 	{ "2id",          get_mcu_id,              "Prints the ID from the chip"      },
 	{ "3ver",         get_boot_ver,            "Prints the version of Bootloader" },
 	{ "5flash",       get_flash_status,        "Prints the Flash Protection status" },
+	{ "13jump",       jump_to_address,         "Jumps Program counter to certain address" },
+	{ "14erase",      erase_sector,            "Erases a sector in flash" },
 	{ 0, 0, 0 }
 };
 
+bool verify_address(uint32_t goto_address);
 /* Private user code ---------------------------------------------------------*/
+
+/**
+  * @brief  verifies the address
+  * @retval bool
+  */
+bool verify_address(uint32_t goto_address)
+{
+	if( (goto_address >= SRAM1_BASE)
+			&& (goto_address <= SRAM1_END) )
+	{
+		/* Address from 0x2000_0000 to 0x2001_BFFF whose size is 112KB*/
+		return ADDR_VALID;
+	}
+	else if( (goto_address >= SRAM2_BASE)
+				&& (goto_address <= SRAM2_END) )
+	{
+		/* Address from 0x2001_C000 to 0x2001_FFFF whose size is 16KB*/
+		return ADDR_VALID;
+	}
+	else if( (goto_address >= FLASH_BASE)
+				&& (goto_address <= FLASH_END) )
+	{
+		/* Address from 0x08000000UL to 0x0807FFFFUL whose size is 512KB*/
+		return ADDR_VALID;
+	}
+	else if( (goto_address >= BKPSRAM_BASE)
+				&& (goto_address <= BKP_SRAM_END) )
+	{
+		/* Address from 0x4248_0000 to 0x4248_4090 whose size is 4KB*/
+		return ADDR_VALID;
+	}
+	else
+	{
+		return ADDR_INVALID;
+	}
+}
 
 /**
   * @brief  Process the Bootloader commands and calls the respective function
@@ -105,7 +144,7 @@ void process_bootloader_command(void)
         	 isTaskCompleted = CmdEntry->pfunCmd( argc, argvar );
         	 if (isTaskCompleted != TASK_COMPLETED)
         	 {
-        		 print_msg( "%s command Failed!", argvar[0] );
+        		 print_msg( "%s comment Failed!\r\n", argvar[0] );
         	 }
         	 else
         	 {
@@ -171,6 +210,82 @@ bool get_flash_status(void)
 }/* end of get_flash_status */
 
 /**
+  * @brief  jump_to_address
+  * @retval Bool
+  */
+bool jump_to_address( uint32_t argc, char *argv[] )
+{
+
+	bool returnValue = TASK_PENDING;
+	bool isAddrValid = ADDR_INVALID;
+	if ( argc == 3 )
+	{
+		/* Argument count should be 2 */
+ //		uint32_t gotoAddress = (uint32_t)atoi(argv[1]);
+   		uint32_t gotoAddress = ( uint32_t )strtol( argv[1], NULL, 16 );
+   		isAddrValid = verify_address(gotoAddress);
+   		if(isAddrValid == ADDR_VALID)
+   		{
+			print_msg( "[DBG_MSG]: gotoAddress: 0x%X\r\n",gotoAddress );
+			gotoAddress |= 1;
+			void (*jump_func)(void) = (void *)gotoAddress;
+			print_msg( "[DBG_MSG]: Performing Jump\r\n" );
+			// todo jump results in Hard Fault
+			jump_func();
+			returnValue = TASK_COMPLETED;
+		}
+		else
+		{
+			print_msg( "[DBG_MSG]: goto-address is invalid\r\n" );
+		}
+	}
+	else
+	{
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 4jump <Jump to address>\r\n" );
+		returnValue = TASK_PENDING;
+	}
+	return returnValue;
+}/* end of jump_to_address */
+
+/**
+  * @brief  erase_sector
+  * @retval Bool
+  */
+bool erase_sector( uint32_t argc, char *argv[] )
+{
+
+	bool returnValue = TASK_PENDING;
+	bool isSectorValid = ADDR_INVALID;
+	if ( argc == 2 )
+	{
+		/* Argument count should be 1 */
+		uint32_t eraseSector = ( uint32_t )strtol( argv[1], NULL, 16 );
+		uint32_t numSectorToErase = (uint32_t)atoi(argv[2]);
+		isAddrValid = verify_address(gotoAddress);
+		if(isAddrValid == ADDR_VALID)
+		{
+			print_msg( "[DBG_MSG]: gotoAddress: 0x%X\r\n",gotoAddress );
+			gotoAddress |= 1;
+			void (*jump_func)(void) = (void *)gotoAddress;
+			print_msg( "[DBG_MSG]: Performing Jump\r\n" );
+			// todo jump results in Hard Fault
+			jump_func();
+			returnValue = TASK_COMPLETED;
+		}
+		else
+		{
+			print_msg( "[DBG_MSG]: goto-address is invalid\r\n" );
+		}
+	}
+	else
+	{
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 4jump <Jump to address>\r\n" );
+		returnValue = TASK_PENDING;
+	}
+	return returnValue;
+}/* end of erase_sector */
+
+/**
   * @brief  Prints the Command List
   * @retval Bool
   */
@@ -192,3 +307,5 @@ bool help_cmd(void)
    } /* end while() */
    return TASK_COMPLETED;
 } /* end DBG_CommandLine_Help () */
+
+

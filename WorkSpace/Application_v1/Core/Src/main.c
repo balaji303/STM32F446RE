@@ -89,7 +89,22 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Transmit(&huart2,(uint8_t *)"Hello from Application Code!\r\n",33,HAL_MAX_DELAY);
-  HAL_Delay(1000);
+//  HAL_Delay(1000);
+// todo: Why HAL_Delay is not runnig
+  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+  for(int i=0;i<10000;i++)
+  {
+	  //small Delay
+	  for(int j=0;j<1000;j++);
+  }
+//  HAL_Delay(2000);
+  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+  for(int i=0;i<10000;i++)
+  {
+	  //small Delay
+	  for(int j=0;j<1000;j++);
+  }
+//  HAL_Delay(2000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,7 +112,13 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  for(int i=0;i<10000;i++)
+	  {
+		  //small Delay
+		  for(int j=0;j<1000;j++);
+	  }
+//	  HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -221,7 +242,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 }
 /* USER CODE END 4 */
 

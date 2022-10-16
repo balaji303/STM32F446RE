@@ -53,9 +53,26 @@ UART_HandleTypeDef huart2;
 #define USER_BUTTON_PIN 	GPIO_PIN_13
 #define USER_BUTTON_PORT	GPIOC
 #define BUTTON_PRESSED		RESET
+#define KBYTES_SIZE			1024
+/* Function Returns */
+#define TASK_COMPLETED		0
+#define TASK_PENDING		1
+#define ADDR_VALID			TASK_COMPLETED
+#define ADDR_INVALID		TASK_PENDING
 
-#define TASK_COMPLETED			0
-#define TASK_PENDING			1
+/* Flash Address and Size */
+/* SRAM1(112 KB) */
+#define SRAM1_SIZE			(112*KBYTES_SIZE)
+#define SRAM1_END			(SRAM1_BASE+SRAM1_SIZE)
+/* SRAM2(16 KB) */
+#define SRAM2_SIZE			(16*KBYTES_SIZE)
+#define SRAM2_END			(SRAM2_BASE+SRAM2_SIZE)
+/* TOTAL FLASH (512 KB) */
+#define TAL_FLASH_SIZE		(512*KBYTES_SIZE)
+/* BACK-UP RAM (4 KB) */
+#define BKP_SRAM_SIZE		(4*KBYTES_SIZE)
+#define BKP_SRAM_END		(BKPSRAM_BASE+BKP_SRAM_SIZE)
+
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

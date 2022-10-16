@@ -365,7 +365,6 @@ void jump_to_app(void)
 
 }
 
-/* todo Process code without python app */
 /**
   * @brief  This function is used read the commands from the user to process bootloader
   * @retval None
@@ -382,9 +381,23 @@ void read_usr_cmd(void)
 		HAL_UART_Transmit(VRL_COM_UART, bootRxBuf, 1, HAL_MAX_DELAY);
 		if (isdigit(bootRxBuf[0]))
 		{
-			rxDataLen = bootRxBuf[0] - 48; // Converting Hex to decimal
-			HAL_UART_Receive(VRL_COM_UART, &bootRxBuf[1], rxDataLen, HAL_MAX_DELAY);
-			HAL_UART_Transmit(VRL_COM_UART, &bootRxBuf[1], rxDataLen, HAL_MAX_DELAY);
+			HAL_UART_Receive(VRL_COM_UART, &bootRxBuf[1], 1, 500);
+			HAL_UART_Transmit(VRL_COM_UART, &bootRxBuf[1], 1, HAL_MAX_DELAY);
+			if (isdigit(bootRxBuf[1]))
+			{
+				/* Gets Length as 2 Digit */
+				rxDataLen = (uint8_t)( (( bootRxBuf[0] - 48 )*10) + (bootRxBuf[1] - 48) ) ; // Converting Hex to decimal
+				HAL_UART_Receive(VRL_COM_UART, &bootRxBuf[2], rxDataLen, HAL_MAX_DELAY);
+				HAL_UART_Transmit(VRL_COM_UART, &bootRxBuf[2], rxDataLen, HAL_MAX_DELAY);
+			}
+			else
+			{
+				/* Gets Length as 1 Digit */
+				rxDataLen = (uint8_t)( bootRxBuf[0] - 48 );
+				HAL_UART_Receive(VRL_COM_UART, &bootRxBuf[1], rxDataLen, HAL_MAX_DELAY);
+				HAL_UART_Transmit(VRL_COM_UART, &bootRxBuf[1], rxDataLen, HAL_MAX_DELAY);
+			}
+
 			HAL_UART_Transmit(VRL_COM_UART,(uint8_t *)"\r\n",3,HAL_MAX_DELAY);
 			process_bootloader_command();
 		}
@@ -414,7 +427,6 @@ bool verify_crc(uint8_t *pData, uint32_t len, uint32_t crcFromHost)
 	for(uint32_t i=0; i<len; i++)
 	{
 		buffChar = pData[i];
-		/* todo Change the len to argument itself */
 		accCrcValue = HAL_CRC_Accumulate(&hcrc, &buffChar, 1);
 	}
 
@@ -429,6 +441,13 @@ bool verify_crc(uint8_t *pData, uint32_t len, uint32_t crcFromHost)
 	}
 
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+}
+
+
 /* USER CODE END 4 */
 
 /**

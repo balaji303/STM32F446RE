@@ -114,3 +114,12 @@ rom Sector 2 we will use for our application
 1. HOST -> Command                         -> MCU
 1. HOST <- ACK/NACK + Length to follow     <- MCU
 1. HOST <- Reply of Length to follow bytes <- MCU
+
+## Sector Erase
+To erase a sector, follow the procedure below:
+1. Check that no Flash memory operation is ongoing by checking the BSY bit in the
+FLASH_SR register
+1. Set the SER bit and select the sector out of the 7 sectors in the main memory block you
+wish to erase (SNB) in the FLASH_CR register
+1. Set the STRT bit in the FLASH_CR register
+1. Wait for the BSY bit to be cleared.

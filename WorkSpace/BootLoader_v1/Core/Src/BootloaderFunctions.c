@@ -45,7 +45,7 @@ const cmdTable_t bootCmdTable[] =
 	{ "3ver",         get_boot_ver,            "Prints the version of Bootloader" },
 	{ "5flash",       get_flash_status,        "Prints the Flash Protection status" },
 	{ "13jump",       jump_to_address,         "Jumps Program counter to certain address" },
-	{ "14erase",      erase_sector,            "Erases a sector in flash" },
+	{ "9erase",      erase_sector,            "Erases a sector in flash" },
 	{ 0, 0, 0 }
 };
 
@@ -255,31 +255,57 @@ bool erase_sector( uint32_t argc, char *argv[] )
 {
 
 	bool returnValue = TASK_PENDING;
-	bool isSectorValid = ADDR_INVALID;
-	if ( argc == 2 )
+	if ( argc == 3 )
 	{
-		/* Argument count should be 1 */
-		uint32_t eraseSector = ( uint32_t )strtol( argv[1], NULL, 16 );
+		/* Argument count should be 2 */
+//		uint32_t eraseSector = ( uint32_t )strtol( argv[1], NULL, 16 );
+		uint32_t eraseSector = ( uint32_t )atoi(argv[1]);
 		uint32_t numSectorToErase = (uint32_t)atoi(argv[2]);
-		isAddrValid = verify_address(gotoAddress);
-		if(isAddrValid == ADDR_VALID)
+		FLASH_EraseInitTypeDef eraseHandler;
+		HAL_StatusTypeDef doesFuncRanRight = HAL_ERROR;
+		if(numSectorToErase >= 8 || eraseSector >= 8)
 		{
-			print_msg( "[DBG_MSG]: gotoAddress: 0x%X\r\n",gotoAddress );
-			gotoAddress |= 1;
-			void (*jump_func)(void) = (void *)gotoAddress;
-			print_msg( "[DBG_MSG]: Performing Jump\r\n" );
-			// todo jump results in Hard Fault
-			jump_func();
-			returnValue = TASK_COMPLETED;
+			/* Maximum Flash Sector is 7 */
+			print_msg( "[WRG_MSG]: Argument is invalid\r\n" );
 		}
 		else
 		{
-			print_msg( "[DBG_MSG]: goto-address is invalid\r\n" );
+			uint32_t sectorError;
+			uint32_t remainingSector = 8 - eraseSector;
+			/* Check for numSectorToErase */
+			if(numSectorToErase >= remainingSector)
+			{
+				numSectorToErase = remainingSector;
+			}
+			/* Erase type is sector erase */
+			eraseHandler.TypeErase = FLASH_TYPEERASE_SECTORS;
+			/* Start of sector erase */
+			eraseHandler.Sector = eraseSector;
+			/* Number of sectors to erase */
+			eraseHandler.NbSectors = remainingSector;
+			/* F446RE MCU has only one Flash Bank */
+			eraseHandler.Banks = FLASH_BANK_1;
+
+			/*Get access to touch the flash registers */
+			HAL_FLASH_Unlock();
+			eraseHandler.VoltageRange = FLASH_VOLTAGE_RANGE_3;  // our mcu will work on this voltage range
+			doesFuncRanRight = (uint8_t) HAL_FLASHEx_Erase(&eraseHandler, &sectorError);
+			HAL_FLASH_Lock();
+
+			if ( doesFuncRanRight == HAL_OK )
+			{
+				returnValue = TASK_COMPLETED;
+				print_msg( "[DBG_MSG]: Erase Completed Successfully\r\n" );
+			}
+			else
+			{
+				print_msg( "[WRG_MSG]: HAL Function Failed\r\n" );
+			}
 		}
 	}
 	else
 	{
-		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 4jump <Jump to address>\r\n" );
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 14erase <Erase Sector> <Num of Sector to Erase>\r\n" );
 		returnValue = TASK_PENDING;
 	}
 	return returnValue;

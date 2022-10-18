@@ -101,7 +101,7 @@ int main(void)
   MX_CRC_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(VRL_COM_UART,(uint8_t *)"Hello from Bootloader!\r\n",15,HAL_MAX_DELAY);
+  HAL_UART_Transmit(VRL_COM_UART,(uint8_t *)"Hello from Bootloader!\r\n",24,HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */

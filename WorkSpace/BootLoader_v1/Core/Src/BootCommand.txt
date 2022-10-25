@@ -11,3 +11,8 @@
 13jump 08008000
 
 9erase 7 1
+
+10write abcd
+10write aaaa
+10write wxyz
+10write lmno

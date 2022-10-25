@@ -68,10 +68,12 @@ static void MX_USART2_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	char *dataFlash = "Balaji";
-	uint8_t len = strlen(dataFlash);
-//	uint8_t dataFlash[] = {'B','a','l','a','j','i'};
+//	char *dataFlash = "Balaji";
+//	uint8_t len = strlen(dataFlash);
+	uint8_t dataFlash[2][6] = { {'h','i'}, {'B','a','l','a','j','i'} };
+//		uint8_t dataFlash[2][6] = { {'h','i'}, {'o','b','a','m','a','1'} };
 	uint32_t StartPageAddress;
+	uint32_t sectorError;
 	bool check = 0;
   /* USER CODE END 1 */
 
@@ -95,24 +97,53 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  FLASH_EraseInitTypeDef eraseHandler;
+  HAL_StatusTypeDef doesFuncRanRight = HAL_ERROR;
+  uint32_t secError;
+//  uint32_t eraseSector = 7;
+  /* Erase type is sector erase */
+  eraseHandler.TypeErase = FLASH_TYPEERASE_SECTORS;
+  /* Start of sector erase */
+  eraseHandler.Sector = 7;
+  /* Number of sectors to erase */
+  eraseHandler.NbSectors = 1;
+  /* F446RE MCU has only one Flash Bank */
+  eraseHandler.Banks = FLASH_BANK_1;
+  /* sectorError variable */
+//  uint32_t sectorError;
+  /*Get access to touch the flash registers */
+  HAL_FLASH_Unlock();
+  eraseHandler.VoltageRange = FLASH_VOLTAGE_RANGE_3;  // our mcu will work on this voltage range
+  doesFuncRanRight = (uint8_t) HAL_FLASHEx_Erase(&eraseHandler, &secError);
+  if ( doesFuncRanRight == HAL_OK )
+  {
 
+  }
+  else
+  {
+	  while(1){
+		  //Do Nothing
+	  }
+  }
+  HAL_FLASH_Lock();
+
+  HAL_Delay(2000);
   /* Unlock the Flash to perform Read and Write  */
   HAL_FLASH_Unlock();
-  StartPageAddress = 0x0807FFF8;
-  /* Write the data to Flash at the address 0x0807 FFF8*/
-
-  while(len)
+  StartPageAddress = 0x0807AAA8;
+  for(int i =0;i<6;i++)
   {
-  	  if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, StartPageAddress, (uint64_t)*dataFlash) == HAL_OK)
+  	  if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, StartPageAddress++,dataFlash[1][i]) == HAL_OK)
   	  {
-	  	  check = 1;
+//	  	  check = 1;
   	  }
   	  else
   	  {
 	  	  /* Error occurred while writing data in Flash memory*/
-	  	  check = 0;
+//	  	  check = 0;
+  		  break;
   	  }
-  	  len--;
+//  	  len--;
   }
   /* Unlock the Flash to perform Read and Write  */
   HAL_FLASH_Lock();

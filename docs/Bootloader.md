@@ -123,3 +123,16 @@ FLASH_SR register
 wish to erase (SNB) in the FLASH_CR register
 1. Set the STRT bit in the FLASH_CR register
 1. Wait for the BSY bit to be cleared.
+
+## Standard programming
+The Flash memory programming sequence is as follows:
+1. Check that no main Flash memory operation is ongoing by checking the BSY bit in the
+FLASH_SR register.
+1. Set the PG bit in the FLASH_CR register
+1. Perform the data write operation(s) to the desired memory address (inside main
+memory block or OTP area):
+  - Byte access in case of x8 parallelism
+  - Half-word access in case of x16 parallelism
+  - Word access in case of x32 parallelism
+  - Double word access in case of x64 parallelism
+1. Wait for the BSY bit to be cleared.

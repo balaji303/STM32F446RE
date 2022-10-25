@@ -45,7 +45,8 @@ const cmdTable_t bootCmdTable[] =
 	{ "3ver",         get_boot_ver,            "Prints the version of Bootloader" },
 	{ "5flash",       get_flash_status,        "Prints the Flash Protection status" },
 	{ "13jump",       jump_to_address,         "Jumps Program counter to certain address" },
-	{ "9erase",      erase_sector,            "Erases a sector in flash" },
+	{ "9erase",       erase_sector,            "Erases a sector in flash" },
+	{ "10write",       write_sector,            "Write a data in flash" },
 	{ 0, 0, 0 }
 };
 
@@ -310,6 +311,92 @@ bool erase_sector( uint32_t argc, char *argv[] )
 	}
 	return returnValue;
 }/* end of erase_sector */
+
+/**
+  * @brief  write_sector
+  * @retval Bool
+  */
+bool write_sector( uint32_t argc, char *argv[] )
+{
+	bool returnValue = TASK_PENDING;
+	if ( argc == 2 )
+	{
+		/* Argument count should be 1 */
+		FLASH_EraseInitTypeDef writeHandler;
+		uint32_t StartPageAddress = 0x0807AAA8;
+		HAL_StatusTypeDef doesFuncRanRight = HAL_ERROR;
+	    FLASH_EraseInitTypeDef eraseHandler;
+	    uint32_t secError;
+	      uint32_t eraseSector = 7;
+	    /* Erase type is sector erase */
+	    eraseHandler.TypeErase = FLASH_TYPEERASE_SECTORS;
+	    /* Start of sector erase */
+	    eraseHandler.Sector = 7;
+	    /* Number of sectors to erase */
+	    eraseHandler.NbSectors = 1;
+	    /* F446RE MCU has only one Flash Bank */
+	    eraseHandler.Banks = FLASH_BANK_1;
+	    /* sectorError variable */
+	      uint32_t sectorError;
+	    /*Get access to touch the flash registers */
+	    HAL_FLASH_Unlock();
+	    eraseHandler.VoltageRange = FLASH_VOLTAGE_RANGE_3;  // our mcu will work on this voltage range
+	    doesFuncRanRight = (uint8_t) HAL_FLASHEx_Erase(&eraseHandler, &secError);
+	    if ( doesFuncRanRight == HAL_OK )
+	    {
+
+	    }
+	    else
+	    {
+	      while(1){
+	    	  //Do Nothing
+	      }
+	    }
+		HAL_FLASH_Lock();
+		HAL_Delay(2000);
+		doesFuncRanRight = HAL_ERROR;
+		uint8_t lengthOfData = strlen(argv[1]);
+		print_msg( "[DBG_MSG]: data: %s\r\nlengthOfData:%d\r\n",argv[1],lengthOfData );
+		if(lengthOfData < 1)
+		{
+			/* Length to write should be atleast 1 */
+			print_msg( "[WRG_MSG]: Argument is invalid\r\n" );
+		}
+		else
+		{
+
+			/*Get access to touch the flash registers */
+			HAL_FLASH_Unlock();
+			for(uint8_t index = 0; index <lengthOfData; index++)
+			{
+				doesFuncRanRight = HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, StartPageAddress++,argv[1][index]);
+				if(doesFuncRanRight != HAL_OK)
+				{
+					break;
+				}
+			}
+			HAL_FLASH_Lock();
+
+			if ( doesFuncRanRight == HAL_OK )
+			{
+				/* Todo Read the content from flash and compare, if same success */
+				returnValue = TASK_COMPLETED;
+				print_msg( "[DBG_MSG]: write Completed Successfully\r\n" );
+			}
+			else
+			{
+				print_msg( "[WRG_MSG]: write HAL Function Failed\r\n" );
+			}
+		}
+	}
+	else
+	{
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 9write <data>\r\n" );
+		returnValue = TASK_PENDING;
+	}
+	return returnValue;
+}/* end of write_sector */
+
 
 /**
   * @brief  Prints the Command List

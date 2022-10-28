@@ -16,3 +16,7 @@
 10write aaaa
 10write wxyz
 10write lmno
+
+
+7fence 7
+7fence 6

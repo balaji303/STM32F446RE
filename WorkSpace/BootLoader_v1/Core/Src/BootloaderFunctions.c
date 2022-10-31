@@ -44,9 +44,11 @@ const cmdTable_t bootCmdTable[] =
 	{ "2id",          get_mcu_id,              "Prints the ID from the chip"      },
 	{ "3ver",         get_boot_ver,            "Prints the version of Bootloader" },
 	{ "5flash",       get_flash_status,        "Prints the Flash Protection status" },
-	{ "13jump",       jump_to_address,         "Jumps Program counter to certain address" },
+	{ "6wall",        wall_sector,             "Read and Write protect a sector in flash" },
+	{ "7fence",       fence_sector,            "Write protect a sector in flash" },
 	{ "9erase",       erase_sector,            "Erases a sector in flash" },
-	{ "10write",       write_sector,            "Write a data in flash" },
+	{ "10write",      write_sector,            "Write a data in flash" },
+	{ "13jump",       jump_to_address,         "Jumps Program counter to certain address" },
 	{ 0, 0, 0 }
 };
 
@@ -397,6 +399,124 @@ bool write_sector( uint32_t argc, char *argv[] )
 	return returnValue;
 }/* end of write_sector */
 
+/**
+  * @brief  fence_sector
+  * @retval Bool
+  */
+bool fence_sector( uint32_t argc, char *argv[] )
+{
+
+	bool returnValue = TASK_PENDING;
+	uint32_t sectorToProtect;
+	HAL_StatusTypeDef doesFuncRanRight = HAL_ERROR;
+	FLASH_OBProgramInitTypeDef ObHandler;
+	if ( argc == 2 )
+	{
+		/* Argument count should be 1 */
+ 		uint8_t sectorToProtect = (uint8_t)atoi(argv[1]);
+ 		if(sectorToProtect >= 0 && sectorToProtect <= 8)
+ 		{
+			/* Converting dec to bitwise operation */
+			sectorToProtect = (1<<sectorToProtect);
+//			volatile uint32_t *pOPTCR = (uint32_t*) 0x40023C14;
+			//Option byte configuration unlock
+			HAL_FLASH_OB_Unlock();
+
+			//wait till no active operation on flash
+			while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+
+			//here we are setting just write protection for the sectors
+			//clear the 31st bit
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//please refer page 84 in RM0390
+			FLASH->OPTCR &= ~(1 << 31);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//put write protection on sectors
+			FLASH->OPTCR &= ~(sectorToProtect << 16);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+
+			//Set the option start bit (OPTSTRT) in the FLASH_OPTCR register
+			FLASH->OPTCR |= ( 1 << 1);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//wait till no active operation on flash
+			while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+
+			HAL_FLASH_OB_Lock();
+			/* Todo Read the content from flash and compare, if same success */
+			returnValue = TASK_COMPLETED;
+			print_msg( "[DBG_MSG]: write protect Completed Successfully\r\n" );
+		}
+		else
+		{
+			print_msg( "[WRG_MSG]: sector to Protect is invalid\r\n" );
+		}
+	}
+	else
+	{
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 7fence <sector Number>\r\n" );
+		returnValue = TASK_PENDING;
+	}
+	return returnValue;
+}/* end of fence_sector */
+
+/**
+  * @brief  wall_sector
+  * @retval Bool
+  */
+bool wall_sector( uint32_t argc, char *argv[] )
+{
+
+	bool returnValue = TASK_PENDING;
+	uint32_t sectorToProtect;
+	HAL_StatusTypeDef doesFuncRanRight = HAL_ERROR;
+	FLASH_OBProgramInitTypeDef ObHandler;
+	if ( argc == 2 )
+	{
+		/* Argument count should be 1 */
+ 		uint8_t sectorToProtect = (uint8_t)atoi(argv[1]);
+ 		if(sectorToProtect >= 0 && sectorToProtect <= 8)
+ 		{
+			/* Converting dec to bitwise operation */
+			sectorToProtect = (1<<sectorToProtect);
+			//Option byte configuration unlock
+			HAL_FLASH_OB_Unlock();
+
+			//wait till no active operation on flash
+			while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+
+			//here wer are setting read and write protection for the sectors
+			//set the 31st bit
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//please refer page 84 in RM0390
+			FLASH->OPTCR |= (1 << 31);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//put read and write protection on sectors
+			FLASH->OPTCR &= ~(0xff << 16);
+			FLASH->OPTCR |= (sectorToProtect << 16);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+
+			//Set the option start bit (OPTSTRT) in the FLASH_OPTCR register
+			FLASH->OPTCR |= ( 1 << 1);
+//			print_msg( "[DBG_MSG]: FLASH->OPTCR-%d\r\n",FLASH->OPTCR );
+			//wait till no active operation on flash
+			while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+
+			HAL_FLASH_OB_Lock();
+			/* Setting up the return value */
+			returnValue = TASK_COMPLETED;
+			print_msg( "[DBG_MSG]: write protect Completed Successfully\r\n" );
+		}
+		else
+		{
+			print_msg( "[WRG_MSG]: sector to Protect is invalid\r\n" );
+		}
+	}
+	else
+	{
+		print_msg( "[WRG_MSG]: Invalid Argu count. ex: 7fence <sector Number>\r\n" );
+	}
+	return returnValue;
+}/* end of wall_sector */
 
 /**
   * @brief  Prints the Command List

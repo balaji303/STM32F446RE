@@ -36,6 +36,8 @@ bool get_boot_ver(void);
 bool help_cmd(void);
 bool get_flash_status(void);
 bool jump_to_address( uint32_t argc, char *argv[] );
+bool fence_sector( uint32_t argc, char *argv[] );
+bool wall_sector( uint32_t argc, char *argv[] );
 bool erase_sector( uint32_t argc, char *argv[] );
 bool write_sector( uint32_t argc, char *argv[] );
 bool get_mcu_id(void);

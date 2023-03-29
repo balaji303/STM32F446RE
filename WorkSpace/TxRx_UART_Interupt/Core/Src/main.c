@@ -55,7 +55,7 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t var;
 /* USER CODE END 0 */
 
 /**
@@ -65,7 +65,7 @@ static void MX_USART2_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint8_t var;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -88,7 +88,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  // Interrupt only once
+//  HAL_UART_Receive_IT(&huart2, &var, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -98,13 +99,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	var = NULL;
-	HAL_UART_Receive(&huart2, &var, sizeof(var), 5);
-	if(var != NULL)
-	{
-		HAL_UART_Transmit(&huart2,&var,sizeof(var),5);
-	}
+	// Interrupt always
+	HAL_UART_Receive_IT(&huart2, &var, 1);
+	// Toggle the LED
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	// Delay
 	HAL_Delay(100);
   }
   /* USER CODE END 3 */
@@ -222,7 +221,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	HAL_UART_Transmit_IT(&huart2,&var,sizeof(var));
+}
 /* USER CODE END 4 */
 
 /**

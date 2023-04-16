@@ -10,6 +10,9 @@ This is a repo for the Board STM32F446RE
 - [UART_DMA](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/TxRx_UART_DMA/Core/Src/main.c)
 - [PRINT_swv](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/PRINT_swv/Core/Src/main.c)
 - [PRINT_Usart](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/PRINT_Usart/Core/Src/main.c)
+- [RTC_Basic](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/RTC_Basic/Core/Src/main.c)
+- [RTC_Basic_Uart](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/RTC_Basic_Uart/Core/Src/main.c)
+- [RTC_BKUP_Uart](https://github.com/balaji303/STM32F446RE/blob/main/WorkSpace/RTC_BKUP_Uart/Core/Src/main.c)
 
 ## CMSIS-FreeRTOS Projects
 

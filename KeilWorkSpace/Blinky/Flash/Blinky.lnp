@@ -1,0 +1,12 @@
+--cpu=Cortex-M4.fp
+".\flash\blinky.o"
+".\flash\stdout_usart.o"
+".\flash\buttons_nucleo-f446re.o"
+".\flash\led_nucleo-f446re.o"
+".\flash\retarget_io.o"
+".\flash\startup_stm32f446xx.o"
+".\flash\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter ".\Flash\Blinky.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Flash\Blinky.map" -o .\Flash\Blinky.axf

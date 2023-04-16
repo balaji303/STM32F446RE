@@ -1,0 +1,185 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; Not Working
+    2 00000000         ; This is a Assembly File
+    3 00000000         ; |.text| means program callable by the C
+    4 00000000         ; CODE means this is stored in RAM memory i.e, Programm 
+                       memory 
+    5 00000000         ; THUMB says the program is written in THUMB
+    6 00000000         ;
+    7 00000000 40023830 
+                       RCC_AHB1ENR
+                               EQU              0x40023830  ;0x40023800+0x30
+    8 00000000 40020000 
+                       GPIOA_MODER
+                               EQU              0x40020000  ;0x4002 0000+0x00
+    9 00000000 40020018 
+                       GPIOA_BSRR
+                               EQU              0x40020018  ;0x4002 0000+0x18
+   10 00000000 0000000F 
+                       DELAY   EQU              0x000F
+   11 00000000 00516155 
+                       ONESEC  EQU              5333333
+   12 00000000 000411AB 
+                       HSEC    EQU              266667
+   13 00000000         
+   14 00000000                 AREA             |.text|,CODE, READONLY, ALIGN=2
+   15 00000000                 THUMB
+   16 00000000                 EXPORT           Main
+   17 00000000         
+   18 00000000         Main
+   19 00000000 F000 F804       BL               GPIO_Init
+   20 00000004 E7FF            B                Loop
+   21 00000006         
+   22 00000006         Loop
+   23 00000006 F000 F80C       BL               Led_On
+   24 0000000A E7FC            B                Loop
+   25 0000000C         
+   26 0000000C         GPIO_Init
+   27 0000000C 4908            LDR              R1, = RCC_AHB1ENR ;Manipulate t
+                                                            his register
+   28 0000000E 6808            LDR              R0,[R1]     ;Stored that into a
+                                                            nother register
+   29 00000010 F040 0001       ORR              R0,R0,#0x1  ;Manipulate its val
+                                                            ue
+   30 00000014 6008            STR              R0,[R1]     ;Store it back to t
+                                                            he register
+   31 00000016         
+   32 00000016 4907            LDR              R1, =GPIOA_MODER
+   33 00000018 6808            LDR              R0,[R1]
+   34 0000001A F440 6080       ORR              R0,R0,#0x400
+   35 0000001E 6008            STR              R0,[R1]
+   36 00000020 4770            BX               LR
+   37 00000022         
+   38 00000022         Led_On
+   39 00000022 4905            LDR              R1, =GPIOA_BSRR
+   40 00000024 6808            LDR              R0,[R1]
+   41 00000026 F040 0020       ORR              R0,R0,#0x20
+   42 0000002A 6008            STR              R0,[R1]
+   43 0000002C 4770            BX               LR
+   44 0000002E 00 00           ALIGN
+   45 00000030                 END
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+              40023830 
+              40020000 
+              40020018 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\main.d -o.\objects\main.o -I.\RTE\_Target_1 -IC:\User
+s\Balaji\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Users\
+Balaji\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\S
+T\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION 
+SETA 528" --predefine="_RTE_ SETA 1" --predefine="STM32F446xx SETA 1" --list=.\
+listings\main.lst main.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 14 in file main.s
+   Uses
+      None
+Comment: .text unused
+GPIO_Init 0000000C
+
+Symbol: GPIO_Init
+   Definitions
+      At line 26 in file main.s
+   Uses
+      At line 19 in file main.s
+Comment: GPIO_Init used once
+Led_On 00000022
+
+Symbol: Led_On
+   Definitions
+      At line 38 in file main.s
+   Uses
+      At line 23 in file main.s
+Comment: Led_On used once
+Loop 00000006
+
+Symbol: Loop
+   Definitions
+      At line 22 in file main.s
+   Uses
+      At line 20 in file main.s
+      At line 24 in file main.s
+
+Main 00000000
+
+Symbol: Main
+   Definitions
+      At line 18 in file main.s
+   Uses
+      At line 16 in file main.s
+Comment: Main used once
+5 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+DELAY 0000000F
+
+Symbol: DELAY
+   Definitions
+      At line 10 in file main.s
+   Uses
+      None
+Comment: DELAY unused
+GPIOA_BSRR 40020018
+
+Symbol: GPIOA_BSRR
+   Definitions
+      At line 9 in file main.s
+   Uses
+      At line 39 in file main.s
+Comment: GPIOA_BSRR used once
+GPIOA_MODER 40020000
+
+Symbol: GPIOA_MODER
+   Definitions
+      At line 8 in file main.s
+   Uses
+      At line 32 in file main.s
+Comment: GPIOA_MODER used once
+HSEC 000411AB
+
+Symbol: HSEC
+   Definitions
+      At line 12 in file main.s
+   Uses
+      None
+Comment: HSEC unused
+ONESEC 00516155
+
+Symbol: ONESEC
+   Definitions
+      At line 11 in file main.s
+   Uses
+      None
+Comment: ONESEC unused
+RCC_AHB1ENR 40023830
+
+Symbol: RCC_AHB1ENR
+   Definitions
+      At line 7 in file main.s
+   Uses
+      At line 27 in file main.s
+Comment: RCC_AHB1ENR used once
+6 symbols
+348 symbols in table

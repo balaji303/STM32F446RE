@@ -1,4 +1,13 @@
-
+/**
+ * @file main.c
+ * @author @balaji303 (https://github.com/balaji303)
+ * @brief LED blink program using Output Data Register
+ * @version 1
+ * @date 19-04-2023
+ * 
+ * Copyright (c) 2023 @balaji303
+ * 
+ */
 /*
 *  LED is connected to D13/PA5
 *    Port A Pin 5
@@ -16,23 +25,35 @@
 *    0th place 1 is for Port A
 */
 #include "stm32f4xx.h"                  // Device header
+
 #define infinte 1
+
 void delayMs(int seconds);
-int main(void){
+
+int main(void)
+{
 	 
 	RCC->AHB1ENR |= 1;                   // Enable AHB1 BUS which is connected to PA5 via GPIO port A 
 	GPIOA->MODER |= 0x400;               // in bits 0000 0000 0000 0000 0000 0100 0000 0000
 	
-	while(infinte){
-	 GPIOA->ODR |=0x20;               //digitalWrite (13,high) in bits 0000 0000 0000 0000 0000 0000 0010 0000
-	 delayMs(1000);
-	 GPIOA->ODR &=~0x20;              //digitalWrite (13,low)
-	 delayMs(1000);
+	while(infinte)
+	{
+		GPIOA->ODR |=0x20;               //digitalWrite (13,high) in bits 0000 0000 0000 0000 0000 0000 0010 0000
+		delayMs(1000);
+		GPIOA->ODR &=~0x20;              //digitalWrite (13,low)
+		delayMs(1000);
 	}	
 }
 
-void delayMs(int seconds){
-	for(;seconds>0;seconds--){
+/**
+ * @brief Delay function
+ * 
+ * @param seconds 
+ */
+void delayMs(int seconds)
+{
+	for(;seconds>0;seconds--)
+	{
 		for(int count1=0;count1<3000;count1++);
 	}
 }

@@ -1,5 +1,6 @@
 # STM32F446RE
-This is a repo for the Board STM32F446RE
+This is a repo for the Board NucleoF446RE that uses STM32F446RE as MCU.
+Which has complete project and related file ready to run as you do so...hit it 🚀
 
 ## Basic Projects
 
@@ -38,6 +39,11 @@ This is a repo for the Board STM32F446RE
 ## Notes
 
 - [Bootloader Notes](https://github.com/balaji303/STM32F446RE/blob/main/docs/Bootloader.md)
+
+## Softwares used
+
+- [NucleoF446RE](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
+- [stm32cubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html)
 
 ## Images
 ![PinOut](https://raw.githubusercontent.com/balaji303/STM32F446RE/main/docs/NucleoPinOut.jpg)
